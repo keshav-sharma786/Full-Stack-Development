@@ -63,7 +63,7 @@ console.log(obj[x]); // ! Cena
 // ! iterating over object using for in loop
 // ? this is the only way to iterate on an object.
 let arr = [10, 20, 30, 40];
-debugger
+
 for (const keshav in arr) {
   console.log(keshav, arr[keshav]);
 }

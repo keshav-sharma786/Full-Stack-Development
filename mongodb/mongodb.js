@@ -247,7 +247,7 @@ db.books.insertMany([
 ]);
 
 // ? to fetch/read single document -> findOne(), we will paas 3 arguments in it
-!db.collection_name.findOne({ filterCondition }, { projection }, { options });
+db.collection_name.findOne({ filterCondition }, { projection }, { options });
 
 // ! All the argumets are not mandatory
 
@@ -309,33 +309,29 @@ db.sampleData.find({});
 
 // ! ================= Note ========= find() method returns a cursor (pointer) -> object
 
-
 // ? Deleting the document (you can't roll back, once deleted, it's deleted)
 
 // ? to delete a single document -> deleteOne(): this will delete the first matched document
 
 db.collection_name.deleteOne({ filterCondition });
 
-db.collection_name.deleteOne( {} ); // ? when no conditions are passed, the first document is deleted
+db.collection_name.deleteOne({}); // ? when no conditions are passed, the first document is deleted
 
 db.collection_name.deleteOne(); // ! this will give you an error => arguments required.
 
-
-db.sampleData.deleteOne({gender: "m"});// ? it will basically delete the first matched document
+db.sampleData.deleteOne({ gender: "m" }); // ? it will basically delete the first matched document
 
 // ! to delete multiple documents => deleteMany(): this will delete all the matched documents.
 
 db.collection_name.deleteMany({ filterCondition });
 
-db.collection_name.deleteMany( {} ); // ? all the documents will be deleted from the collection
+db.collection_name.deleteMany({}); // ? all the documents will be deleted from the collection
 
 // ! 9) to update a single document -> updateOne(): this will update the first matched document
 
 // ? db.collection_name.updateOne({filter}, {updation value}, {options})
 
-
-db.collection_name.updateOne({}, {updationValue}, {options});// ? first document in the collection would be updated
-
+db.collection_name.updateOne({}, { updationValue }, { options }); // ? first document in the collection would be updated
 
 // ! ======================= operators =================================
 
@@ -355,14 +351,139 @@ db.collection_name.updateOne({}, {updationValue}, {options});// ? first document
 // ! syntax for above 6 operators are same
 // ! filter object ====> { fieldName: {$op: value}}
 
-
 // ! Q => get the details of all the employees whose age is less than 32
 
-db.sampleData.find({age: {$lt : 32}});
+db.sampleData.find({ age: { $lt: 32 } });
 
-db.sampleData.find({name: {$eq: "Sri"}});
-
+db.sampleData.find({ name: { $eq: "Sri" } });
 
 // ? in ============================= $in
 // ? not in =================================== $nin
 
+// ! ================================ 20 Jan, 2026 =========================================
+
+// ? download the json file provided in group
+
+// ! mongo tools => for writing the queries in the form of commands
+
+// ! mongoimport "path of json file to import" -d databaseName -c collectionName --jsonArray => for importing the json data not visually,but by using the commandLine.
+
+// ! Chrome => mongo tools download.
+
+// ! Q display all the employee names having salary more than 2000
+
+// ? db.emp.find({{sal: $gt: 2000}}, {empName: 1, _id: 0, sal: 1})
+
+// ! Q => display all the emp names who are working in department 10 and department
+
+// ! $in
+// ? filter object ====> {fieldName: {$in/nin: ["v1", "v2", "v3", ......]}}
+// ? $in will fetch all the documents, which will match any one of the given values v1, v2...
+
+// ? $nin will fetch all the documents, which fails to fulfill any one of the given values v1, v2...
+
+db.emp.find(
+  {
+    deptNo: { $in: [10, 20] },
+  },
+  {
+    // show the deptNo.
+    deptNo: 1,
+    // do'not show the id
+    _id: 0,
+  },
+);
+
+// ! $nin
+db.emp.find(
+  {
+    // 10, 20 ko chod ke sab print ho jayega!!
+    deptNo: { $nin: [10, 20] },
+  },
+  {
+    // show the deptNo.
+    deptNo: 1,
+    // do'not show the id
+    _id: 0,
+  },
+);
+
+// ! explicit and implicit
+
+db.sampleData.deleteOne({ gender: "m" }); // implicit use of $eq
+db.sampleData.deleteOne({ gender: { $eq: "m" } }); // explicit use of $eq
+
+// ! two ways for creating a collection
+
+db.createCollection();
+db.collection_name.insertMany();
+
+// ? Both will work perfectly fine..
+
+// ! display all the emp details who are working as clerk in department 10
+
+// ? Case 1 when we apply multiple conditions on different fields => all the conditions are getting fulfilled , so I can say it is working like logical and.
+
+db.emp.find(
+  {
+    // ? first condition
+    job: "clerk",
+    // ? second condition
+    deptNo: 10,
+  },
+  {
+    job: 1,
+    deptNo: 1,
+    _id: 0,
+  },
+);
+
+// ! display all the emp details who are having sal in between  1000 and 2000
+// ? Case 2 => when we apply multiple conditions on same field => only the last condition will work
+db.emp.find(
+  {
+    // ? first condition
+    sal: { $gt: 1000 },
+    // ? second condition
+    sal: { $lt: 2000 },
+  },
+  {
+    sal: 1,
+  },
+);
+
+// job: clerk will be override by the job: manager
+db.emp.find({
+  job: "clerk",
+  depNo: 20,
+  job: "manager",
+});
+
+// ! Logical Operators (logical AND, Logical OR etc ...)
+
+// !  these 3 have same syntax
+// ? and ==========================> $and
+// ? or ===========================> $or
+// ? nor ==========================> $nor
+// ? filter object ===>
+// ? { $and : [{c1}, {c2}, {c3}, ....]}
+
+// ! Logical and => this will fetch all the documents, which fulfills all the given conditions
+
+// ! display
+db.emp.find(
+  {
+    $and: [
+      // ! condition 1
+      { job: "clerk" },
+      // ! condition 2
+      { deptNo: { $eq: 10 } },
+    ],
+  },
+  {
+    job: 1,
+    deptNo: 1,
+  },
+);
+
+// ? not ===========================> $not
