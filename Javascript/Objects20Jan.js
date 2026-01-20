@@ -63,9 +63,13 @@ console.log(obj[x]); // ! Cena
 // ! iterating over object using for in loop
 // ? this is the only way to iterate on an object.
 let arr = [10, 20, 30, 40];
-for (const i in arr) {
-  console.log(i, arr[i]);
+debugger
+for (const keshav in arr) {
+  console.log(keshav, arr[keshav]);
 }
+// writing the memory addresses also along with for in loop
+// @404981
+// @635089 817
 
 for (const key in obj) {
   console.log(obj[key]);
