@@ -60,7 +60,7 @@ let a1 = () => {
 a1();
 
 // ? if no parameter we can replace () parenthesis with underscore
-let a2 = _ => {
+let a2 = (_) => {
   console.log("Hi I am a arrow function 2");
 };
 a2();
@@ -87,5 +87,3 @@ console.log(a5(6, 6));
 
 let a6 = (n1, n2) => n1 + n2;
 console.log(a6(7, 7));
-
-
