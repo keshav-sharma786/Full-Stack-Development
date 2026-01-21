@@ -487,3 +487,93 @@ db.emp.find(
 );
 
 // ? not ===========================> $not
+
+// ! display all the emp names who are not working in dept 10
+db.emp.find({ deptNo: { $ne: 10 } }, { deptNo: 1 });
+db.emp.find({ deptNo: { $not: 10 } }, { deptNo: 1 });
+// ! logical not => This will invert the expression that is being passed
+
+// ? find the user with id
+// ! 66a23517b5c6990483c4e49b
+db.emp.findOne({ _id: ObjectId("66a23517b5c6990483c4e49b") });
+
+// ! we have to specify that _id is type of ObjectId, otherwise it will be considered as a string
+
+db.emp.insertOne({
+  _id: 1234,
+  name: "abc",
+  age: 34,
+  sal: 3499,
+});
+
+db.emp.findOne({ _id: ObjectId("1234") }); // ! Error => BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+
+db.emp.findOne({ _id: 1234 }); // ! No error
+
+// ! display all the emp who were hired after 1981
+("1 Jan 2003");
+
+// ? Always store the date in the ISO Date Format => yyyy-MM-DD T HH:MM:SS:ssZ
+
+// ! yyyy -> year
+// ! MM -> month
+// ! DD -> date
+// ? T -> separator
+// ! HH -> hours
+// ! MM -> minutes
+// ! SS -> seconds
+// !ss -> ms
+// ! z -> offset value ist => india is ahead 5:30 hours
+
+db.emp.find({ hireDate: { $gt: ISODate("YYYY-MM-DD") } });
+db.emp.find({ hireDate: { $gt: ISODate("1981-12-31") } }, { hireDate: 1 });
+
+// ? display all the employee names who are having their performance rating greater than 3.8
+
+db.emp.find(
+  { "performance.rating": { $gt: 3.8 } },
+  { empName: 1, "performance.rating": 1 },
+);
+
+// ! while using nested object properties, use double quotes to avoid error
+
+// ! Display all the emp details who are having react as one of their skills
+
+db.emp.find({ skills: "react" }, { skills: 1, _id: 0 });
+
+// ! Display all the emp details who are having react and sql as one of their skills
+
+db.emp.find({ skills: ["html", "sales"] }, { skills: 1, _id: 0 });
+// ! not working
+// ! use array operators
+
+// ! ============================ array op ===================
+// ! all ====================== $all
+// ! size ========================= $size
+// ! element match ======================= $elemMatch
+
+// ? syntax for $all =>
+// ! filter part ==>
+// ? {fieldName: $all: ['v1', 'v2']};
+db.emp.find({ skills: { $all: ["html", "php"] } }, { skills: 1 });
+// ! This will fetch all the documents which will fulfill all the given values
+
+db.emp.find({ skills: { $in: ["html", "php"] } }, { skills: 1 });
+
+// ! $in can be used anywhere, but $all will be used only on arrays
+
+// ? syntax for $size =>
+// ! filter part ==>
+// ? {fieldName: $size: INTEGER VALUE};
+
+// ! display all the emp who are having only 2 skills
+// ? this will fetch the documents based on the size of the skills array
+db.emp.find({skills: {$size: 2}}, {skills: 1});
+
+// ! Literals array
+let array = ["1", "abc"]
+
+
+
+
+
