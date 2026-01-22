@@ -468,6 +468,7 @@ db.emp.find({
 // ? filter object ===>
 // ? { $and : [{c1}, {c2}, {c3}, ....]}
 
+// ! ------------------------------ ! --------------------
 // ! Logical and => this will fetch all the documents, which fulfills all the given conditions
 
 // ! display
@@ -568,12 +569,114 @@ db.emp.find({ skills: { $in: ["html", "php"] } }, { skills: 1 });
 
 // ! display all the emp who are having only 2 skills
 // ? this will fetch the documents based on the size of the skills array
-db.emp.find({skills: {$size: 2}}, {skills: 1});
+db.emp.find({ skills: { $size: 2 } }, { skills: 1 });
 
 // ! Literals array
-let array = ["1", "abc"]
+let array = ["1", "abc"];
+
+// ! ------- 22 Jan, 2025 -------------------
+// ! Students who have scored above 90 in sem 1
+
+// ? use $elemMatch => nesting objects or array
+
+db.students.find({ courses: { $elemMatch: { condition } } });
+
+db.students.find(
+  {
+    courses: {
+      $elemMatch: { marks: { $gt: 90 }, subject: "Math", semester: 1 },
+    },
+  },
+  {
+    name: 1,
+    _id: 0,
+  },
+);
+
+// ! students who have failed (marks < 50) in any exam in semester 1
+
+db.students.find({
+  courses: {
+    $elemMatch: {
+      marks: { $lt: 50 }, // ? first condition.
+      semester: 1,
+    },
+  }, // ? second condition.
+});
+
+// ! students with scholarship above 40,000 in 2024
+db.students.find({
+  scholarships: { $elemMatch: { amount: { $gt: 40000 }, year: 2024 } },
+});
+
+// ! $elemMatch => it is used to filter out the documents based on some conditions, when the array contains objects/documents in it.
+
+// ? element operators (exists, type, etc...)
+// ! exists ==================================> $exists
+// ! type ========================================> $type => checks type of your fieldName
+
+// ? syntax for $exists
+// ! filter part
+// ! { fieldName: {$exists: boolean}}
+
+// ! check weather that key-value pair is present in you students document or not
+db.emp.find({ email: { $exists: true } });
+
+db.emp.find({ email: { $exists: false } });
+
+// ! display all the names of the employees who are getting the bonus
+
+db.emp.find({bonus:{$exists: true}}, {empName: 1, _id: 0});
+
+// ! $type
+// ? Syntax
+// ! filter part
+// ! { fieldName: {$type: datatype}}
+db.emp.find({sal: {$type: "number"}});
 
 
+// ? evaluation operators
+// ! regex => regular expressions ==> used for pattern matching ( string ) and it only works on the string data
+
+// ? ("anc@gmail.com")
+
+// ? Syntax for regex
+// ! filter part
+// ! { fieldName : {$regex: /pattern/}}
+
+// ! First way -> we are applying regex anywhere in the name
+// ! Display all the emp details who are having letter a in their name
+
+db.emp.find({empName: {$regex: /a/}}, {empName: 1, _id: 0});
+db.emp.find({empName: {$regex: /ar/}}, {empName: 1, _id: 0});
+db.emp.find({empName: {$regex: /ada/}}, {empName: 1, _id: 0});
+
+// ? second way => we are applying regex at start (^)
+// ? ^ cap symbol will start the pattern matching from the beginning of the string
+// ! display all the emp details who are having first letter as "a" in their name
+
+db.emp.find({empName: {$regex: /^a/}}, {empName: 1, _id: 0});
+
+// ! display all the emp details who are having first letter as "al" as their first two letters
+db.emp.find({empName: {$regex: /^al/}}, {empName: 1, _id: 0});
+
+// ! third way => apply regex at the last
+// ! display all the emp details who are having letter "s" as their last character
+
+// ! for that use $ symbol => it will start pattern matching from end of string
+db.emp.find({empName: {$regex: /s$/}}, {empName: 1, _id: 0});
 
 
+// ! display all the emp details who are having letter "s" as their second last character.
+// ? symbol for skipping the characters => .(dot symbol)
+// ? for skipping the characters use dot symbol.
+// ? one dot will represent one character.
+db.emp.find({empName: {$regex: /e.$/}}, {empName: 1, _id: 0});
+
+// ! display all the emp details who are having letter "a" as their second character.
+db.emp.find({empName: {$regex: /^.a/}}, {empName: 1, _id: 0});
+
+
+// ! display all the emp details who are having exactly 4 letters as their name
+db.emp.find({empName: {$regex: /^....$/}}, {empName: 1, _id: 0});
 
