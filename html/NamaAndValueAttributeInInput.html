@@ -1,0 +1,35 @@
+<!-- prettier-ignore -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Name And Value Attribute In Input Tag</title>
+  </head>
+  <body>
+    <form action="#" enctype="multipart/form-data">
+      <fieldset>
+        <legend>Form</legend>
+        <label for="username">
+          Enter Your Username
+          <input
+            type="text"
+            placeholder="Enter Your Name"
+            name="username"
+            id="username"
+          />
+        </label>
+        <br />
+        <!-- ? Select Tag In Html -->
+        Choose One<select name="role" required>
+          <option value="" disabled selected>Select The User Type</option>
+          <option value="admin">admin</option>
+          <option value="Premium User">Premium User</option>
+          <option value="Normal User">Normal User</option>
+        </select>
+        <br />
+        <button>Submit</button>
+      </fieldset>
+    </form>
+  </body>
+</html>
