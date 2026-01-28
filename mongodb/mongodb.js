@@ -626,14 +626,13 @@ db.emp.find({ email: { $exists: false } });
 
 // ! display all the names of the employees who are getting the bonus
 
-db.emp.find({bonus:{$exists: true}}, {empName: 1, _id: 0});
+db.emp.find({ bonus: { $exists: true } }, { empName: 1, _id: 0 });
 
 // ! $type
 // ? Syntax
 // ! filter part
 // ! { fieldName: {$type: datatype}}
-db.emp.find({sal: {$type: "number"}});
-
+db.emp.find({ sal: { $type: "number" } });
 
 // ? evaluation operators
 // ! regex => regular expressions ==> used for pattern matching ( string ) and it only works on the string data
@@ -647,36 +646,146 @@ db.emp.find({sal: {$type: "number"}});
 // ! First way -> we are applying regex anywhere in the name
 // ! Display all the emp details who are having letter a in their name
 
-db.emp.find({empName: {$regex: /a/}}, {empName: 1, _id: 0});
-db.emp.find({empName: {$regex: /ar/}}, {empName: 1, _id: 0});
-db.emp.find({empName: {$regex: /ada/}}, {empName: 1, _id: 0});
+db.emp.find({ empName: { $regex: /a/ } }, { empName: 1, _id: 0 });
+db.emp.find({ empName: { $regex: /ar/ } }, { empName: 1, _id: 0 });
+db.emp.find({ empName: { $regex: /ada/ } }, { empName: 1, _id: 0 });
 
 // ? second way => we are applying regex at start (^)
 // ? ^ cap symbol will start the pattern matching from the beginning of the string
 // ! display all the emp details who are having first letter as "a" in their name
 
-db.emp.find({empName: {$regex: /^a/}}, {empName: 1, _id: 0});
+db.emp.find({ empName: { $regex: /^a/ } }, { empName: 1, _id: 0 });
 
 // ! display all the emp details who are having first letter as "al" as their first two letters
-db.emp.find({empName: {$regex: /^al/}}, {empName: 1, _id: 0});
+db.emp.find({ empName: { $regex: /^al/ } }, { empName: 1, _id: 0 });
 
 // ! third way => apply regex at the last
 // ! display all the emp details who are having letter "s" as their last character
 
 // ! for that use $ symbol => it will start pattern matching from end of string
-db.emp.find({empName: {$regex: /s$/}}, {empName: 1, _id: 0});
-
+db.emp.find({ empName: { $regex: /s$/ } }, { empName: 1, _id: 0 });
 
 // ! display all the emp details who are having letter "s" as their second last character.
 // ? symbol for skipping the characters => .(dot symbol)
 // ? for skipping the characters use dot symbol.
 // ? one dot will represent one character.
-db.emp.find({empName: {$regex: /e.$/}}, {empName: 1, _id: 0});
+db.emp.find({ empName: { $regex: /e.$/ } }, { empName: 1, _id: 0 });
 
 // ! display all the emp details who are having letter "a" as their second character.
-db.emp.find({empName: {$regex: /^.a/}}, {empName: 1, _id: 0});
-
+db.emp.find({ empName: { $regex: /^.a/ } }, { empName: 1, _id: 0 });
 
 // ! display all the emp details who are having exactly 4 letters as their name
-db.emp.find({empName: {$regex: /^....$/}}, {empName: 1, _id: 0});
+db.emp.find({ empName: { $regex: /^....$/ } }, { empName: 1, _id: 0 });
+
+// ! --------- 28th Jan, 2026 --------------------------------->
+// ? Arithmetic update operators
+// ? $max, $min, $inc
+// ! Syntax for $max and $min
+// ? Updation part
+// ! $max will only update the value when the past value is strictly greater than the saved data.
+
+// ! $min will only update the value when the past value is strictly smaller than the saved data.
+db.scores.insertMany([
+  {
+    name: "Varun",
+    maxScore: 100,
+    minScore: 50,
+  },
+  {
+    name: "Ashwin",
+    maxScore: 100,
+    minScore: 50,
+  },
+]);
+
+// !db.scores.updateOne({name: "Varun", {$max: {maxScore: 300}}});
+
+// ? In case the field name is not present, then the new key-value pair will be added
+
+// ! Syntax for $in
+// ? It is used to increment / decrement the data by specefic values.
+// ! Updatiion part
+// ! {$inc: {fieldName: +/- INTEGER NUMBER}}
+
+// ?
+
+db.scores.updateOne({ name: "Varun" }, { $inc: { maxScore: -1 } });
+
+// ! with $inc you basically cannot pass null, it is an exception.
+db.scores.updateOne({ name: "Varun" }, { $inc: { age: -1 } });
+
+// ! Array Update Operators
+// ? push => this will add element at the last
+// ! Syntax => { $push:{fieldName: "value"}}
+
+db.emp.updateOne({}, { $push: { skills: "html" } });
+
+db.emp.updateOne({}, { $push: { skills: ["html", "CSS"] } });
+
+// ! $push + $each ==> Using these we can add multiple values to the array
+
+// ? syntax --> {$push: {fieldName: {$each: [v1, v2, v3]}}}
+
+// ! in this no nested array will be created
+db.emp.updateOne(
+  { empName: "ward" },
+  { $push: { skills: { $each: ["node", "mongodb"] } } },
+);
+
+// ! modifiers => $position, $sort, $slice
+
+db.emp.updateOne(
+  { empName: "scott" },
+  { $push: { skills: { $each: ["ai/ml"], $position: 1 } } },
+);
+
+db.emp.updateOne(
+  { empName: "scott" },
+  { $push: { skills: { $each: ["gen_ai"], $position: 3, $sort: 1 } } },
+);
+
+// ? $sort: 1 for ascending and $sort: -1 for descending....
+
+// ! if the fieldName is not present then a new key-value pair would be created, it's type would always be array
+db.emp.updateOne({}, { $push: { hobbies: "singing" } });
+
+// ? $pop will remove an element from array either from first or last
+
+// ! syntax => {$pop: {fieldName: 1 / -1}}
+
+// ? 1 => delete from end
+// ? -1 =>  delete from front
+db.emp.updateOne({}, { $pop: { skills: 1 } });
+
+// ! addToSet => This will make sure that array will not store any duplicate values , using $addToSet use to add unique values inside an array
+
+// ! it has the same syntax as we have seen above.
+
+// ? {$addToSet: {fieldName: value}}
+
+// ! we cannot use $position, $sort, $slice with addToSet !!!
+
+// ? $pull and $pullAll
+
+// ? $pullAll => this will remove all the occurences of values present in the array i.e v1, v2, v3 ........,  it matches with the values. i can't pass any condition to $pullAll
+
+// ! updation part => {$pullAll: {fieldName: [v1, v2...]}}
+
+db.emp.updateOne({}, { skills: ["react", "sql"] });
+
+
+// ? $pull
+// ! syntax -> updation parrt
+
+// ? {$pull: {field: {expression}}}
+
+db.emp.updateOne({}, {$pull: {$regex: {skills: /e/}}});
+
+
+// ! diff b/w $pull and $pullAll is that using $pull we can use the conditions....
+
+
+// ! $pullAll will accept only array
+
+
 
